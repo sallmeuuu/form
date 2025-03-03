@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Register User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .form-container input,
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #0cadf8;
+            color: white;
+            border: none;
+        }
+        button:hover {
+            background-color: #0cadf8;
+        }
+        #error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Form Register User</h1>
+
+<div class="form-container">
+    <form id="registerForm" onsubmit="return validateForm()">
+        <label for="name">Nama:</label>
+        <input type="text" id="name" name="name" placeholder="Masukkan nama Anda" required>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+
+        <label for="whatsapp">WhatsApp:</label>
+        <input type="tel" id="whatsapp" name="whatsapp" placeholder="Masukkan nomor WhatsApp" required>
+
+        <label for="profile-image">Image Profil:</label>
+        <input type="file" id="profile-image" name="profile-image" accept="image/jpeg" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p id="error-message"></p>
+</div>
+
+<script>
+// Fungsi untuk validasi form
+function validateForm() {
+    let errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = ""; // Reset error message
+
+    let name = document.getElementById('name').value;
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;
+    let whatsapp = document.getElementById('whatsapp').value;
+    let profileImage = document.getElementById('profile-image').files[0];
+
+    // Validasi Nama (Proper Case)
+    name = name.replace(/\s+/g, ' ').trim(); // Menghapus spasi berlebih
+    let properName = name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    document.getElementById('name').value = properName; // Mengubah ke Proper Case
+
+    // Validasi Username (Lowercase, a-z dan 0-9, panjang antara 3-20)
+    let usernamePattern = /^[a-z0-9]{3,20}$/;
+    if (!usernamePattern.test(username)) {
+        errorMessage.textContent = "Username hanya boleh mengandung huruf kecil dan angka, serta panjang antara 3 hingga 20 karakter.";
+        return false;
+    }
+
+    // Validasi Password (Minimal 1 huruf kecil, 1 huruf besar, 1 angka, 1 karakter spesial, panjang antara 6-20)
+    let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{6,20}$/;
+    if (!passwordPattern.test(password)) {
+        errorMessage.textContent = "Password harus mengandung minimal 1 huruf kecil, 1 huruf besar, 1 angka, dan 1 karakter spesial. Panjang antara 6-20 karakter.";
+        return false;
+    }
+
+    // Validasi WhatsApp (Harus dimulai dengan 62 dan panjang antara 11-14 digit)
+    if (!whatsapp.startsWith("62")) {
+        whatsapp = "62" + whatsapp.replace(/^0+/, ''); // Mengubah nomor awalan 0 ke kode negara 62
+        document.getElementById('whatsapp').value = whatsapp; // Update value
+    }
+    if (whatsapp.length < 11 || whatsapp.length > 14 || !/^\d+$/.test(whatsapp)) {
+        errorMessage.textContent = "Nomor WhatsApp harus diawali dengan '62' dan memiliki panjang antara 11 hingga 14 digit.";
+        return false;
+    }
+
+    // Validasi Image Profil (Harus JPG dan ukuran antara 50 - 500 kB)
+    if (profileImage) {
+        let fileType = profileImage.type;
+        let fileSize = profileImage.size / 1024; // Convert byte to KB
+        if (fileType !== "image/jpeg") {
+            errorMessage.textContent = "File yang dipilih bukan gambar JPG.";
+            return false;
+        }
+        if (fileSize < 50 || fileSize > 500) {
+            errorMessage.textContent = "Ukuran gambar harus antara 50 KB hingga 500 KB.";
+            return false;
+        }
+    } else {
+        errorMessage.textContent = "Gambar profil wajib diunggah.";
+        return false;
+    }
+
+    // Jika semua validasi berhasil, form dapat disubmit
+    alert("Registrasi berhasil!");
+    return true;
+}
+</script>
+
+</body>
+</html>
